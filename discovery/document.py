@@ -22,10 +22,10 @@ class DocObject(object):
 
     def getExtAttributes(self):
         extattributes={}
-        for x in self.rootelem.keys:
+        for x in self.rootelem.keys():
             if (x.startswith('{')):
-                exattributes[x]=self.rootelem.get(x)
-        return exattributes
+                extattributes[x]=self.rootelem.get(x)
+        return extattributes
 
 class SimpleDocObject(DocObject):
     def getContent(self):

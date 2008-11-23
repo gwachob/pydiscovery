@@ -5,8 +5,8 @@ from discovery.document import *
 class parseXRD(TestCase):
     def setUp(self):
         self.baseXML='''<?xml version="1.0" encoding="UTF-8"?>
-              <XRDS xmlns="xri://$xrds">
-                <XRD xml:id="oauth" xmlns:simple="http://xrds-simple.net/core/1.0" xmlns="xri://$xrd*($v*2.0)" version="2.0">
+              <XRDS xmlns="xri://$xrds" xmlns:foo="http://example.com">
+                <XRD xml:id="oauth" xmlns:simple="http://xrds-simple.net/core/1.0" xmlns="xri://$xrd*($v*2.0)" version="2.0" foo:attr="blah">
                   <Type>xri://$xrds*simple</Type>
                   <Expires>2008-12-31T23:59:59Z</Expires>
                   <Service priority="10">
@@ -54,6 +54,9 @@ class parseXRD(TestCase):
         self.assertEqual(len(xrdlist), 2)
         firstxrd=xrdlist[0]
         secondxrd=xrdlist[1]
+
+        extattrs=firstxrd.getExtAttributes()
+        self.assertEquals(extattrs.get('{http://example.com}attr'), "blah")
         self.assertEqual(firstxrd.getVersion(), "2.0")
         self.assertEqual(secondxrd.getVersion(), "2.0")
         firstlist=list(firstxrd.getContentIterator())
@@ -75,3 +78,4 @@ class parseXRD(TestCase):
         lastservicelist=list(firstlist[6].getContentIterator())
         self.assertEqual(lastservicelist[1].tag, XRDNS_S+"LocalID")
         self.assertEqual(lastservicelist[1].getContent(),"0685bd9184jfhq22") 
+
