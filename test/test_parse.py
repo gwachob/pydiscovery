@@ -59,12 +59,27 @@ class parseXRD(TestCase):
         self.assertEquals(extattrs.get('{http://example.com}attr'), "blah")
         self.assertEqual(firstxrd.getVersion(), "2.0")
         self.assertEqual(secondxrd.getVersion(), "2.0")
+
+
         firstlist=list(firstxrd.getContentIterator())
         self.assertEqual(len(firstlist), 7)
         self.assertEqual(firstlist[0].tag, XRDNS_S+"Type")
         self.assertEqual(firstlist[1].tag, XRDNS_S+"Expires")
         self.assertEqual(firstlist[2].tag, XRDNS_S+"Service")
 
+        self.assertEqual(firstlist[2].getTypeList(), [
+                    'http://oauth.net/core/1.0/endpoint/request',
+                    'http://oauth.net/core/1.0/parameters/auth-header',
+                    'http://oauth.net/core/1.0/parameters/uri-query',
+                    'http://oauth.net/core/1.0/signature/PLAINTEXT'
+                    ])
+        self.assertEqual(firstlist[2].getTypeList(), [
+                    'http://oauth.net/core/1.0/endpoint/request',
+                    'http://oauth.net/core/1.0/parameters/auth-header',
+                    'http://oauth.net/core/1.0/parameters/uri-query',
+                    'http://oauth.net/core/1.0/signature/PLAINTEXT'
+                    ])
+        self.assert_(firstlist[2].containsType('http://oauth.net/core/1.0/parameters/uri-query'))
         self.assertEqual(firstlist[0].getContent(), "xri://$xrds*simple")
         self.assertEqual(firstlist[1].getContent(), "2008-12-31T23:59:59Z")
 

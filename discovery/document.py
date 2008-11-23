@@ -44,6 +44,10 @@ class LocalID(SimpleDocObject):
     pass
 
 class Service(DocObject):
+    def __init__(self, elem):
+        DocObject.__init__(self, elem)
+        self.types=None
+
     def getPriority(self):
         return self.rootelem.get('priority')
 
@@ -57,6 +61,23 @@ class Service(DocObject):
                 yield LocalID(child)
             else:
                 yield child
+
+    def getTypeList(self):
+        ''' Returns a list of strings which are the Type content types 
+        '''
+        # Not terribly efficient, but whatever
+        if not self.types is None:
+            return self.types
+        types=[]
+        for child in self.rootelem.getchildren():
+            if child.tag==XRDNS_S+"Type":
+                element=Type(child)
+                types.append(element.getContent())
+        self.types=types
+        return types
+
+    def containsType(self, type):
+        return type in self.getTypeList()
 
 class XRD(DocObject):
     def getVersion(self):
