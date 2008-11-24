@@ -50,13 +50,14 @@ class parseXRD(TestCase):
                 '''
     def test_getXRDS(self):
         xrds=parseXRDSString(self.baseXML)
-        xrdlist=list(xrds.getContentIterator())
+        xrdlist=xrds.getContents()
 
         # Test xrds.content iterator length
         self.assertEqual(len(xrdlist), 2)
         firstxrd=xrdlist[0]
         secondxrd=xrdlist[1]
 
+        # Test xrds.get
         # Test xrd.getExtAttributes
         extattrs=firstxrd.getExtAttributes()
         self.assertEquals(extattrs.get('{http://example.com}attr'), "blah")
@@ -65,8 +66,8 @@ class parseXRD(TestCase):
         self.assertEqual(firstxrd.getVersion(), "2.0")
         self.assertEqual(secondxrd.getVersion(), "2.0")
 
-        # Test xrd.getContentIterator
-        firstlist=list(firstxrd.getContentIterator())
+        # Test xrd.getContents
+        firstlist=firstxrd.getContents()
         self.assertEqual(len(firstlist), 7)
 
         # Test xrd.getServices
@@ -109,14 +110,14 @@ class parseXRD(TestCase):
         self.assertEqual(firstlist[2].getPriority(), "10")
         
         # Test parsing a service element
-        firstservicelist=list(firstlist[2].getContentIterator())
+        firstservicelist=firstlist[2].getContents()
         self.assertEqual(len(firstservicelist), 5)
         self.assertEqual(firstservicelist[0].tag, XRDNS_S+"Type")
         self.assertEqual(firstservicelist[4].tag, XRDNS_S+"URI")
         self.assertEqual(firstservicelist[4].getContent(), "https://api.example.com/session/request")
         
         # Test parsing a service element with other child elements
-        lastservicelist=list(firstlist[6].getContentIterator())
+        lastservicelist=firstlist[6].getContents()
         self.assertEqual(lastservicelist[1].tag, XRDNS_S+"LocalID")
         self.assertEqual(lastservicelist[1].getContent(),"0685bd9184jfhq22") 
 

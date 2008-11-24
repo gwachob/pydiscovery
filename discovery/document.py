@@ -47,24 +47,23 @@ class Service(DocObject):
     def __init__(self, elem):
         DocObject.__init__(self, elem)
         self.types=None
-        self.children=None
+        self.objects=[]
+        self.children=self.rootelem.getchildren()
+        for child in self.children:
+            if child.tag==XRDNS_S+"Type":
+                self.objects.append(Type(child))
+            elif child.tag==XRDNS_S+"URI":
+                self.objects.append(URI(child))
+            elif child.tag==XRDNS_S+"LocalID":
+                self.objects.append(LocalID(child))
+            else:
+                self.objects.append(child)
 
     def getPriority(self):
         return self.rootelem.get('priority')
 
-    def getContentIterator(self):
-        if self.children is None:
-            self.children=self.rootelem.getchildren()
-        for child in self.children:
-            if child.tag==XRDNS_S+"Type":
-                yield Type(child)
-            elif child.tag==XRDNS_S+"URI":
-                yield URI(child)
-            elif child.tag==XRDNS_S+"LocalID":
-                yield LocalID(child)
-            else:
-                yield child
-
+    def getContents(self):
+        return self.objects
 
     def getTypeList(self):
         ''' Returns a list of strings which are the Type content types 
@@ -86,25 +85,25 @@ class Service(DocObject):
 class XRD(DocObject):
     def __init__(self, elem):
         DocObject.__init__(self, elem)
-        self.children=None
+        self.objects=[]
+        self.children=self.rootelem.getchildren()
+        for child in self.children:
+            if child.tag==XRDNS_S+"Type":
+                self.objects.append(Type(child))
+            elif child.tag==XRDNS_S+"Expires":
+                self.objects.append(Expires(child))
+            elif child.tag==XRDNS_S+"Service":
+                self.objects.append(Service(child))
+            else:
+                self.objects.append(child)
 
     def getVersion(self):
         return self.rootelem.get("version")
 
-    def getContentIterator(self):
-        ''' Returns an iterator of XRD child or extension elements
+    def getContents(self):
+        ''' Returns contents containsing XRD child or extension elements
         '''
-        if self.children is None:
-            self.children=self.rootelem.getchildren()
-        for child in self.children:
-            if child.tag==XRDNS_S+"Type":
-                yield Type(child)
-            elif child.tag==XRDNS_S+"Expires":
-                yield Expires(child)
-            elif child.tag==XRDNS_S+"Service":
-                yield Service(child)
-            else:
-                yield child
+        return self.objects
 
     def getServices(self):
         if self.children is None:
@@ -116,12 +115,17 @@ class XRD(DocObject):
         return self.services
 
 class XRDS(DocObject):
-    def getContentIterator(self):
-        ''' Returns an iterator of XRD and extension elements
-        '''
+    def __init__(self, elem):
+        DocObject.__init__(self, elem)
+        self.objects=[]
         for child in self.rootelem.getchildren():
             if child.tag==XRDNS_S+"XRD":
-                yield XRD(child)
+                self.objects.append(XRD(child))
             else:
-                yield child
-    
+                self.objects.append(child)
+
+    def getContents(self):
+        ''' Returns XRD and extension elements
+        '''
+        return self.objects
+
