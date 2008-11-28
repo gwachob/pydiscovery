@@ -5,7 +5,7 @@ XRDSNS="xri://$xrds"
 XRDNS="xri://$xrd*($v*2.0)"
 XRDSNS_S="{%s}" % XRDSNS
 XRDNS_S="{%s}" % XRDNS
-
+XMLID_ATTR="{http://www.w3.org/XML/1998/namespace}id"
 
 def parseXRDSString(xmlstring):
     element=XML(xmlstring)
@@ -118,11 +118,19 @@ class XRDS(DocObject):
     def __init__(self, elem):
         DocObject.__init__(self, elem)
         self.objects=[]
+        self.xrdmapping={}
         for child in self.rootelem.getchildren():
             if child.tag==XRDNS_S+"XRD":
-                self.objects.append(XRD(child))
+                newxrd=XRD(child)
+                self.objects.append(newxrd)
+                id=child.get(XMLID_ATTR)
+                if not id is None:
+                    self.xrdmapping[id]=newxrd
             else:
                 self.objects.append(child)
+
+    def getXRDByID(self, id):
+        return self.xrdmapping.get(id)
 
     def getContents(self):
         ''' Returns XRD and extension elements

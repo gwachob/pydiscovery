@@ -57,9 +57,13 @@ class parseXRD(TestCase):
         firstxrd=xrdlist[0]
         secondxrd=xrdlist[1]
 
-        # Test xrds.get
         # Test xrd.getExtAttributes
         extattrs=firstxrd.getExtAttributes()
+        self.assertEquals(extattrs.get('{http://example.com}attr'), "blah")
+
+        # Test xrds.getXRDByID
+        xrd=xrds.getXRDByID("oauth")
+        extattrs=xrd.getExtAttributes()
         self.assertEquals(extattrs.get('{http://example.com}attr'), "blah")
 
         # Test xrd.getversion
